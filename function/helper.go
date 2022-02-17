@@ -1,7 +1,11 @@
 package function
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -49,6 +53,39 @@ func regenerateCache(destination string, fullname string) {
 	if err != nil {
 		logrus.Error(err)
 	}
+}
+
+func Decrypt(encryptedString string, k string) string {
+	key, err := hex.DecodeString(k)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	enc, err := hex.DecodeString(encryptedString)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	nonceSize := aesGCM.NonceSize()
+
+	nonce, ciphetext := enc[:nonceSize], enc[nonceSize:]
+
+	plainText, err := aesGCM.Open(nil, nonce, ciphetext, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return fmt.Sprintf("%s", plainText)
 }
 
 // func removeProcessIndex(s []model.Process, index int) []model.Process {
