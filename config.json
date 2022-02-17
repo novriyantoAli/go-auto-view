@@ -1,0 +1,76 @@
+{
+    "sourceProfile": "/profile_default",
+    "destinationProfile": "/home/rhein/.config/chromium/",
+    "profile": {
+        "prefix": "profile",
+        "split": "_",
+        "detail": [
+            {
+                "profileName": "amirantungo",
+                "username": "amirantungo",
+                "password": "!As1234567890"
+            },
+            {
+                "profileName": "yoniapula",
+                "username": "yoniapula",
+                "password": "!As1234567890"
+            },
+            {
+                "profileName": "amranpalilati",
+                "username": "amranpalilati",
+                "password": "!As1234567890"
+            }
+        ]
+    },
+    "proxyList": [],
+    "openBrowserCommand": {
+        "applicationName": "chromium",
+        "arguments": [
+            "https://www.youtube.com",
+            "--profile-directory="
+        ]
+    },
+    "installationBrowserCommand": {
+        "applicationName": "chromium",
+        "arguments": [
+            "https://chrome.google.com/webstore/detail/youtube-video-skip-ad-tri/hpnelpabemhjfjgiibgkliipaehnfcjk",
+            "https://chrome.google.com/webstore/detail/auto-quality-for-youtube/iaddfgegjgjelgkanamleadckkpnjpjc",
+            "https://www.youtube.com/",
+            "chrome://settings/clearBrowserData",
+            "--profile-directory="
+        ]
+    },
+    "killBrowserCommand": {
+        "applicationName": "pkill",
+        "arguments": ["chromium"]
+    },
+    "jobName": "wait for the next countdown",
+    "maxTime": 300,
+    "port": ":7070",
+    "cloneBrowser": 2,
+    "javascriptConfig": {
+        "keyword": "mohamad novriyanto",
+        "channelName": "Mohamad Novriyanto",
+        "channelCode": "channel/UC6xyoCWM7dsN8b42-RYgWng",
+        "playlistName": "Teaching",
+        "playlistCode": "PL_koOt2qnzVs0eVQOms04M1FbqMEKjWLm",
+        "step": [
+            {
+                "waitElement": "input[name=\"search_query\"]",
+                "url": "https://www.youtube.com/"
+            },
+            {
+                "waitElement": "a[id=\"main-link\"]",
+                "url": "https://www.youtube.com/results?search_query=mohamad+novriyanto"
+            },
+            {
+                "waitElement": "tp-yt-paper-tab",
+                "url": "https://www.youtube.com/channel/UC6xyoCWM7dsN8b42-RYgWng"
+            },
+            {
+                "waitElement": "a[title=\"Teaching\"]",
+                "url": "https://www.youtube.com/channel/UC6xyoCWM7dsN8b42-RYgWng/playlists"
+            }
+        ]
+    }
+}
