@@ -3,7 +3,6 @@ package function
 import (
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 	"time"
 
@@ -22,12 +21,6 @@ func Install(c *model.Config) {
 
 	args := []string{}
 
-	if runtime.GOOS == "windows" {
-		args = []string{"cmd", "/c", "start"}
-	}
-
-	args = append(args, c.InstallationBrowserCommand.ApplicationName)
-
 	for i := 0; i < len(c.InstallationBrowserCommand.Arguments); i++ {
 		if strings.Contains(c.InstallationBrowserCommand.Arguments[i], "profile-directory") {
 			args = append(args, (c.InstallationBrowserCommand.Arguments[i] + c.SourceProfile[1:len(c.SourceProfile)]))
@@ -36,12 +29,13 @@ func Install(c *model.Config) {
 		}
 	}
 
-	cmd := exec.Command(args[0], args[1:]...)
-
+	cmd := exec.Command(c.InstallationBrowserCommand.ApplicationName, args...)
 	err = cmd.Run()
 	if err != nil {
 		logrus.Errorln(err)
 	}
+
+	logrus.Errorln(cmd.ProcessState.Pid())
 
 	// get working directory
 	path, err := os.Getwd()
@@ -93,7 +87,7 @@ func Install(c *model.Config) {
 
 		logrus.Info("open browser with argumens...")
 		cm := exec.Command(c.OpenBrowserCommand.ApplicationName, argsOpenBrowser...)
-		err = cm.Run()
+		err = cm.Start()
 		if err != nil {
 			logrus.Error(err)
 		}
