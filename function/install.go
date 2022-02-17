@@ -18,7 +18,7 @@ func Install(c *model.Config) {
 	if err != nil {
 		logrus.Error(err)
 	}
-	
+
 	args := []string{}
 
 	for i := 0; i < len(c.InstallationBrowserCommand.Arguments); i++ {
@@ -34,6 +34,8 @@ func Install(c *model.Config) {
 	if err != nil {
 		logrus.Errorln(err)
 	}
+
+	cmd.Process.Wait()
 
 	// get working directory
 	path, err := os.Getwd()
