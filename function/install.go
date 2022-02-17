@@ -3,6 +3,7 @@ package function
 import (
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"time"
 
@@ -21,6 +22,12 @@ func Install(c *model.Config) {
 
 	args := []string{}
 
+	if runtime.GOOS == "windows" {
+		args = []string{"cmd", "/c", "start"}
+	}
+
+	args = append(args, c.InstallationBrowserCommand.ApplicationName)
+
 	for i := 0; i < len(c.InstallationBrowserCommand.Arguments); i++ {
 		if strings.Contains(c.InstallationBrowserCommand.Arguments[i], "profile-directory") {
 			args = append(args, (c.InstallationBrowserCommand.Arguments[i] + c.SourceProfile[1:len(c.SourceProfile)]))
@@ -29,17 +36,11 @@ func Install(c *model.Config) {
 		}
 	}
 
-	cmd := exec.Command(c.InstallationBrowserCommand.ApplicationName, args...)
+	cmd := exec.Command(args[0], args[1:]...)
+
 	err = cmd.Run()
 	if err != nil {
 		logrus.Errorln(err)
-	}
-
-	for {
-		if cmd.ProcessState.Exited() {
-			logrus.Errorln("cmd has exited...")
-			break
-		}
 	}
 
 	// get working directory
@@ -95,12 +96,6 @@ func Install(c *model.Config) {
 		err = cm.Run()
 		if err != nil {
 			logrus.Error(err)
-		}
-		for {
-			if cm.ProcessState.Exited() {
-				logrus.Errorln("cm has exited...")
-				break
-			}
 		}
 
 		logrus.Info("delete if profile exists in working directory...")
