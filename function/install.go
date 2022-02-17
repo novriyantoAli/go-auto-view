@@ -35,7 +35,12 @@ func Install(c *model.Config) {
 		logrus.Errorln(err)
 	}
 
-	cmd.Process.Wait()
+	for {
+		if cmd.ProcessState.Exited() {
+			logrus.Errorln("cmd has exited...")
+			break
+		}
+	}
 
 	// get working directory
 	path, err := os.Getwd()
@@ -90,6 +95,12 @@ func Install(c *model.Config) {
 		err = cm.Run()
 		if err != nil {
 			logrus.Error(err)
+		}
+		for {
+			if cm.ProcessState.Exited() {
+				logrus.Errorln("cm has exited...")
+				break
+			}
 		}
 
 		logrus.Info("delete if profile exists in working directory...")
