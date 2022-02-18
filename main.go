@@ -23,55 +23,9 @@ const filename string = "config.rein"
 func main() {
 	logrus.SetFormatter(&logrus.TextFormatter{FullTimestamp: true})
 
-	// jsonFile, err := os.Open("config.json")
-	// if we os.Open returns an error then handle it
-	// if err != nil {
-	// logrus.Error(err)
-	// }
-<<<<<<< HEAD
-
-	// defer the closing of our jsonFile so that we can parse it later on
-	// defer jsonFile.Close()
-
-	// byteValue, err := ioutil.ReadAll(jsonFile)
-	// if err != nil {
-	// logrus.Errorln(err)
-	// }
-=======
-
-	// defer the closing of our jsonFile so that we can parse it later on
-	// defer jsonFile.Close()
-
-	// byteValue, err := ioutil.ReadAll(jsonFile)
-	// if err != nil {
-	// logrus.Errorln(err)
-	// }
-
-	encryptedFile, err := os.Open(filename)
-	if err != nil {
-		logrus.Panicln(err)
-	}
-
-	defer encryptedFile.Close()
-
-	byteValue, err := ioutil.ReadAll(encryptedFile)
-	if err != nil {
-		logrus.Panicln(err.Error())
-	}
->>>>>>> b90dbcc04d388a38f6aaf9e1dd7e81bae9c6050e
-
-	encryptedString := fmt.Sprintf("%s", byteValue)
-
-	decryptedString := function.Decrypt(encryptedString, key)
-
 	var c model.Config
 
-<<<<<<< HEAD
 	json.Unmarshal(function.Decryption(), &c)
-	// json.Unmarshal([]byte(function.Decryption()), &c)
-=======
-	json.Unmarshal([]byte(decryptedString), &c)
->>>>>>> b90dbcc04d388a38f6aaf9e1dd7e81bae9c6050e
 
 	ch := make(chan model.Stp)
 
