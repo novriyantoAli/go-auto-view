@@ -17,6 +17,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const key string = "1768735535f927a62dd80d269d8c6c0ca600b1d94043a91b21c119c2d66bc6ec"
+const filename string = "config.rein"
+
 func main() {
 	logrus.SetFormatter(&logrus.TextFormatter{FullTimestamp: true})
 
@@ -25,6 +28,16 @@ func main() {
 	// if err != nil {
 	// logrus.Error(err)
 	// }
+<<<<<<< HEAD
+
+	// defer the closing of our jsonFile so that we can parse it later on
+	// defer jsonFile.Close()
+
+	// byteValue, err := ioutil.ReadAll(jsonFile)
+	// if err != nil {
+	// logrus.Errorln(err)
+	// }
+=======
 
 	// defer the closing of our jsonFile so that we can parse it later on
 	// defer jsonFile.Close()
@@ -34,10 +47,31 @@ func main() {
 	// logrus.Errorln(err)
 	// }
 
+	encryptedFile, err := os.Open(filename)
+	if err != nil {
+		logrus.Panicln(err)
+	}
+
+	defer encryptedFile.Close()
+
+	byteValue, err := ioutil.ReadAll(encryptedFile)
+	if err != nil {
+		logrus.Panicln(err.Error())
+	}
+>>>>>>> b90dbcc04d388a38f6aaf9e1dd7e81bae9c6050e
+
+	encryptedString := fmt.Sprintf("%s", byteValue)
+
+	decryptedString := function.Decrypt(encryptedString, key)
+
 	var c model.Config
 
+<<<<<<< HEAD
 	json.Unmarshal(function.Decryption(), &c)
 	// json.Unmarshal([]byte(function.Decryption()), &c)
+=======
+	json.Unmarshal([]byte(decryptedString), &c)
+>>>>>>> b90dbcc04d388a38f6aaf9e1dd7e81bae9c6050e
 
 	ch := make(chan model.Stp)
 

@@ -32,25 +32,25 @@ func Install(c *model.Config) {
 	cmd := exec.Command(c.InstallationBrowserCommand.ApplicationName, args...)
 	err = cmd.Run()
 	if err != nil {
-		logrus.Errorln(err)
+		logrus.Panicln(err)
 	}
 
 	// get working directory
 	path, err := os.Getwd()
 	if err != nil {
-		logrus.Error(err)
+		logrus.Panicln(err)
 	}
 
 	// delete directory profile default in working directory
 	err = os.RemoveAll((path + c.SourceProfile))
 	if err != nil {
-		logrus.Error(err)
+		logrus.Panicln(err)
 	}
 
 	// copy profile from system to working directory
 	err = cp.Copy((c.DestinationProfile + c.SourceProfile[1:len(c.SourceProfile)]), (path + c.SourceProfile))
 	if err != nil {
-		logrus.Error(err)
+		logrus.Panicln(err)
 	}
 
 	for i := 0; i < len(c.Profile.Detail); i++ {
@@ -60,13 +60,13 @@ func Install(c *model.Config) {
 		logrus.Info("deleting destination...")
 		err = os.RemoveAll(destination)
 		if err != nil {
-			logrus.Error(err)
+			logrus.Panicln(err)
 		}
 
 		logrus.Info("copy from profile default to chrome profile home...")
 		err = cp.Copy((path + c.SourceProfile), destination)
 		if err != nil {
-			logrus.Error(err)
+			logrus.Panicln(err)
 		}
 
 		logrus.Info("write credentials...")
@@ -85,21 +85,22 @@ func Install(c *model.Config) {
 
 		logrus.Info("open browser with argumens...")
 		cm := exec.Command(c.OpenBrowserCommand.ApplicationName, argsOpenBrowser...)
-		err = cm.Start()
+		err = cm.Run()
 		if err != nil {
-			logrus.Error(err)
+			logrus.Panicln(err)
 		}
 
 		logrus.Info("delete if profile exists in working directory...")
 		profileWorkingDirectory := path + "/" + fullname
 		err = os.RemoveAll(profileWorkingDirectory)
 		if err != nil {
-			logrus.Error(err)
+			logrus.Panicln(err)
 		}
 
+		logrus.Info("copy directory from system to working directory...")
 		err = cp.Copy(destination, profileWorkingDirectory)
 		if err != nil {
-			logrus.Error(err)
+			logrus.Panicln(err)
 		}
 
 		writeCredentials(nil, nil)

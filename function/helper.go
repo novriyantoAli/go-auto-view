@@ -3,8 +3,13 @@ package function
 import (
 	"crypto/aes"
 	"crypto/cipher"
+<<<<<<< HEAD
 	"encoding/json"
 	"encoding/pem"
+=======
+	"encoding/hex"
+	"encoding/json"
+>>>>>>> b90dbcc04d388a38f6aaf9e1dd7e81bae9c6050e
 	"fmt"
 	"io/ioutil"
 	"math/rand"
@@ -63,6 +68,7 @@ func regenerateCache(destination string, fullname string) {
 	}
 }
 
+<<<<<<< HEAD
 func rKey(filename string) ([]byte, error) {
 	key, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -116,15 +122,47 @@ func createCipher() cipher.Block {
 
 func Decryption() []byte {
 	bytes, err := ioutil.ReadFile(fmt.Sprintf(encryptedfile))
+=======
+func Decrypt(encryptedString string, k string) string {
+	key, err := hex.DecodeString(k)
 	if err != nil {
 		panic(err.Error())
 	}
 
+	enc, err := hex.DecodeString(encryptedString)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	nonceSize := aesGCM.NonceSize()
+
+	nonce, ciphetext := enc[:nonceSize], enc[nonceSize:]
+
+	plainText, err := aesGCM.Open(nil, nonce, ciphetext, nil)
+>>>>>>> b90dbcc04d388a38f6aaf9e1dd7e81bae9c6050e
+	if err != nil {
+		panic(err.Error())
+	}
+
+<<<<<<< HEAD
 	blockCipher := createCipher()
 	stream := cipher.NewCTR(blockCipher, abc)
 	stream.XORKeyStream(bytes, bytes)
 
 	return bytes
+=======
+	return fmt.Sprintf("%s", plainText)
+>>>>>>> b90dbcc04d388a38f6aaf9e1dd7e81bae9c6050e
 }
 
 // func removeProcessIndex(s []model.Process, index int) []model.Process {
