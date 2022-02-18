@@ -17,9 +17,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const key string = "1768735535f927a62dd80d269d8c6c0ca600b1d94043a91b21c119c2d66bc6ec"
-const filename string = "config.rein"
-
 func main() {
 	logrus.SetFormatter(&logrus.TextFormatter{FullTimestamp: true})
 
