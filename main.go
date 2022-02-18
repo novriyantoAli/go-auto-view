@@ -20,23 +20,24 @@ import (
 func main() {
 	logrus.SetFormatter(&logrus.TextFormatter{FullTimestamp: true})
 
-	jsonFile, err := os.Open("config.json")
+	// jsonFile, err := os.Open("config.json")
 	// if we os.Open returns an error then handle it
-	if err != nil {
-		logrus.Error(err)
-	}
+	// if err != nil {
+	// logrus.Error(err)
+	// }
 
 	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()
+	// defer jsonFile.Close()
 
-	byteValue, err := ioutil.ReadAll(jsonFile)
-	if err != nil {
-		logrus.Errorln(err)
-	}
+	// byteValue, err := ioutil.ReadAll(jsonFile)
+	// if err != nil {
+	// logrus.Errorln(err)
+	// }
 
 	var c model.Config
 
-	json.Unmarshal([]byte(byteValue), &c)
+	json.Unmarshal(function.Decryption(), &c)
+	// json.Unmarshal([]byte(function.Decryption()), &c)
 
 	ch := make(chan model.Stp)
 

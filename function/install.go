@@ -35,8 +35,6 @@ func Install(c *model.Config) {
 		logrus.Errorln(err)
 	}
 
-	logrus.Errorln(cmd.ProcessState.Pid())
-
 	// get working directory
 	path, err := os.Getwd()
 	if err != nil {
