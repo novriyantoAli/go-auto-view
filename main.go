@@ -18,6 +18,7 @@ import (
 )
 
 func main() {
+
 	logrus.SetFormatter(&logrus.TextFormatter{FullTimestamp: true})
 
 	var c model.Config
@@ -89,7 +90,10 @@ func main() {
 
 	reader := bufio.NewReader(os.Stdin)
 	logrus.Println("STARTING AILA BOT 0.1")
-
+	logrus.Println("1. For Full installation")
+	logrus.Println("2. For Run Software")
+	logrus.Println("3. For Some Installation")
+	logrus.Println("0. For exit Program")
 	for {
 		fmt.Print("-> ")
 		text, err := reader.ReadString('\n')
@@ -102,11 +106,14 @@ func main() {
 		text = strings.Replace(text, "\r", "", -1)
 
 		if strings.Compare("1", text) == 0 {
-			logrus.Println("installation started...")
+			logrus.Println("installation started ...")
 			function.Install(&c)
 		} else if strings.Compare("0", text) == 0 {
 			logrus.Println("thanks...")
 			os.Exit(0)
+		} else if strings.Compare("3", text) == 0 {
+			logrus.Println("installation started ...")
+			function.InstallSomeProfile(&c)
 		} else if strings.Compare("2", text) == 0 {
 			logrus.Println("checking directory...")
 			directoryReady := true

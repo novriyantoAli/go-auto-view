@@ -1,0 +1,36 @@
+{
+   "author": "010 Pixel",
+   "background": {
+      "scripts": [ "js/background.js", "js/loadscript.js" ]
+   },
+   "browser_action": {
+      "default_icon": "images/icon16.png"
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "js": [ "js/myapp.js" ],
+      "matches": [ "*://*.youtube.com/*" ],
+      "run_at": "document_end"
+   } ],
+   "description": "A plugin for automatically pressing Skip Ad button on youtube videos.",
+   "icons": {
+      "128": "images/icon128.png",
+      "16": "images/icon16.png",
+      "24": "images/icon24.png",
+      "32": "images/icon32.png",
+      "48": "images/icon48.png",
+      "64": "images/icon64.png",
+      "96": "images/icon96.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjGx+SBjkHKQ9+JgAkOY3Lnqp7XwDrK7QyyH0hpjuioVWERM14SGVN5vmudWed/UqStqFRNipNkEUtGl19r++30T8nhLYzCKP+Gp5T295ht1p2uvffWO5gkqEihSoW4n18lb4d+MuKmU5s/FIIabpn7+tL6ZRWSloTlkHdxXTY+45b0xCGjqDAaYyCcNvCUL5Q/znZz13/acVVuFoTkbHIAT2spEAIklhQjEQpifU3k/6ROU2XezNqKrErwNlfNxylYQ4D6QwknKnQznTXuxgeBvOxI9xiVHOtm0thwmOblEEn0VXAqwn94sfT0r/ElS9zevgaPNbkIOdZGyY6GcUVwIDAQAB",
+   "manifest_version": 2,
+   "name": "Youtube Video Skip Ad Trigger",
+   "options_ui": {
+      "open_in_tab": false,
+      "page": "options.html"
+   },
+   "permissions": [ "*://*.youtube.com/*", "storage", "tabs" ],
+   "short_name": "Youtube-Video-Skip-Ad-Trigger",
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "2.1.1"
+}

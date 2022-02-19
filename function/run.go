@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 	"os/exec"
+	"os/user"
+	"runtime"
 	"strings"
 	"time"
 
@@ -13,15 +15,31 @@ import (
 
 func Run(c *model.Config, ch chan model.Stp) {
 
+	user, err := user.Current()
+	if err != nil {
+		logrus.Panicln(err.Error())
+	}
+
+	destinationProfile := strings.Replace(c.DestinationProfile, "${username}", user.Username, -1)
+
 	logrus.Info("regenerate all cache folder...")
 	for i := 0; i < len(c.Profile.Detail); i++ {
-		regenerateCache(c.DestinationProfile, (c.Profile.Prefix + c.Profile.Split + c.Profile.Detail[i].ProfileName))
+		regenerateCache(destinationProfile, (c.Profile.Prefix + c.Profile.Split + c.Profile.Detail[i].ProfileName))
+	}
+
+	// kill all process
+	logrus.Info("kill all browser ...")
+	cmd := exec.Command(c.KillBrowserCommand.ApplicationName, c.KillBrowserCommand.Arguments...)
+	err = cmd.Run()
+	if err != nil {
+		logrus.Error(err)
 	}
 
 	// create profiles just for kill process if url is not contains playlist
 	profiles := make([]model.Process, 0)
 
-	logrus.Info("open browser by random selection...")
+	logrus.Info("open browser by random selection ... ")
+
 	var listRandomIndex []int
 	for i := 0; i < c.CloneBrowser; i++ {
 		var randomInt int
@@ -56,20 +74,25 @@ func Run(c *model.Config, ch chan model.Stp) {
 				args = append(args, c.OpenBrowserCommand.Arguments[i])
 			}
 		}
-		cmd := exec.Command(c.OpenBrowserCommand.ApplicationName, args...)
-		err := cmd.Start()
+
+		command := exec.Command(c.OpenBrowserCommand.ApplicationName, args...)
+		err := command.Start()
 		if err != nil {
 			logrus.Panic(err)
 		}
 
 		procss := model.Process{}
 		procss.ProfileDetail = c.Profile.Detail[randomInt]
-		procss.ProcessID = cmd.Process.Pid
+		procss.ProcessID = command.Process.Pid
 
 		profiles = append(profiles, procss)
+
+		time.Sleep(10 * time.Second)
 	}
 
 	listOfKill := make([]int, 0)
+	listOfUsername := make([]string, 0)
+	firstWindow := true
 	for {
 		res, ok := <-ch
 		if !ok {
@@ -84,6 +107,37 @@ func Run(c *model.Config, ch chan model.Stp) {
 				break
 			}
 		}
+
+		if strings.Contains(res.Command, c.JavascriptConfig.PlaylistCode) {
+			// listOfUsername menampung nama-nama yang telah di lakukan tab dan di aktivkan PIDnya
+			if len(listOfUsername) == 0 {
+				listOfUsername = append(listOfUsername, res.Username)
+			} else {
+				usernameInList := false
+				for i := 0; i < len(listOfUsername); i++ {
+					if listOfUsername[i] == res.Username {
+						usernameInList = true
+						break
+					}
+				}
+				if !usernameInList {
+					listOfUsername = append(listOfUsername, res.Username)
+				}
+			}
+		}
+
+		if len(listOfUsername) == c.CloneBrowser && firstWindow {
+			switch runtime.GOOS {
+			case "windows":
+				windowsSwitchWindow(profiles)
+			case "linux":
+				linuxSwitchWindow(c.OpenBrowserCommand.ApplicationName)
+			default:
+				logrus.Warningln("os not regonized")
+			}
+			firstWindow = false
+		}
+
 		// check if command not contains url playlist
 		if !strings.Contains(res.Command, c.JavascriptConfig.PlaylistCode) && !inList {
 			// check if not in list
@@ -104,7 +158,7 @@ func Run(c *model.Config, ch chan model.Stp) {
 				}
 
 				go Run(c, ch)
-				
+
 				break
 			}
 		}
