@@ -24,15 +24,10 @@ import (
 * 7. copy directory profile_user from system to local
  */
 func Install(c *model.Config) {
-	user, err := user.Current()
-	if err != nil {
-		logrus.Panicln(err.Error())
-	}
 
-	destinationProfile := strings.Replace(c.DestinationProfile, "${username}", user.Username, -1)
-
+	destinationProfile := c.DestinationProfile
 	// delete directory profile_default in system
-	err = os.RemoveAll((destinationProfile + c.SourceProfile[1:len(c.SourceProfile)]))
+	err := os.RemoveAll((destinationProfile + c.SourceProfile[1:len(c.SourceProfile)]))
 	if err != nil {
 		logrus.Error(err)
 	}

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"os/exec"
-	"os/user"
 	"runtime"
 	"strings"
 	"time"
@@ -15,12 +14,7 @@ import (
 
 func Run(c *model.Config, ch chan model.Stp) {
 
-	user, err := user.Current()
-	if err != nil {
-		logrus.Panicln(err.Error())
-	}
-
-	destinationProfile := strings.Replace(c.DestinationProfile, "${username}", user.Username, -1)
+	destinationProfile := c.DestinationProfile
 
 	logrus.Info("regenerate all cache folder...")
 	for i := 0; i < len(c.Profile.Detail); i++ {
@@ -30,7 +24,7 @@ func Run(c *model.Config, ch chan model.Stp) {
 	// kill all process
 	logrus.Info("kill all browser ...")
 	cmd := exec.Command(c.KillBrowserCommand.ApplicationName, c.KillBrowserCommand.Arguments...)
-	err = cmd.Run()
+	err := cmd.Run()
 	if err != nil {
 		logrus.Error(err)
 	}
