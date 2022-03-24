@@ -62,7 +62,18 @@ type JavascriptConfig struct {
 	Step         []Step `json:"step"`
 }
 
+/**
+* WifiConfig
+ */
+
+type WifiConfig struct {
+	Active         bool   `json:"active"`
+	ConnectionName string `json:"connectionName"`
+	Password       string `json:"password"`
+}
+
 type Config struct {
+	WiCon                      WifiConfig                 `json:"wifiConfig"`
 	SourceProfile              string                     `json:"sourceProfile"`
 	DestinationProfile         string                     `json:"destinationProfile"`
 	Profile                    Profile                    `json:"profile"`

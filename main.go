@@ -134,7 +134,7 @@ func main() {
 
 			if directoryReady {
 				logrus.Println("getting started application function...")
-				function.Run(&c, ch)
+				function.Run(&c, nil, ch)
 			}
 		} else {
 			logrus.Warningln("unknown command")

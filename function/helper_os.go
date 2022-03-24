@@ -6,23 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-vgo/robotgo"
-	"github.com/novriyantoAli/go-auto-view/model"
 	"github.com/sirupsen/logrus"
 )
-
-// windowsSwitchWindow ...
-func windowsSwitchWindow(profiles []model.Process) {
-	for i := 0; i < len(profiles); i++ {
-		robotgo.ActivePID(int32(profiles[i].ProcessID))
-		title := robotgo.GetTitle(int32(profiles[i].ProcessID))
-		fmt.Println("pid:", int32(profiles[i].ProcessID), "title:", title)
-
-		time.Sleep(3 * time.Second)
-
-		robotgo.KeyTap("t", "shift")
-	}
-}
 
 func linuxSwitchWindow(applicationName string) {
 	output, err := exec.Command("pgrep", applicationName).Output()
@@ -31,7 +16,7 @@ func linuxSwitchWindow(applicationName string) {
 	}
 
 	s := strings.Split(strings.TrimSpace(fmt.Sprintf("%s", output)), "\n")
-	
+
 	outputWm, err := exec.Command("wmctrl", "-lp").Output()
 	if err != nil {
 		logrus.Error(err)
@@ -60,8 +45,6 @@ func linuxSwitchWindow(applicationName string) {
 				}
 
 				time.Sleep(3 * time.Second)
-
-				robotgo.KeyTap("t", "shift")
 			}
 		}
 	}

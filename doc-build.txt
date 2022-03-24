@@ -33,3 +33,10 @@ GOOS=darwin GOARCH=amd64 go build -o aila-bot01-amd64-darwin main.go
 # 32-bit
 GOOS=darwin GOARCH=386 go build -o aila-bot01-386-darwin main.go
 #####################################################################
+
+=====================================================================
+WINDOWS build command
+NOTED: using cmd to set environment variable
+=====================================================================
+set GOARCH=amd64
+set GOOS=linux

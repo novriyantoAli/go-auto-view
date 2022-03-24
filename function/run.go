@@ -2,7 +2,9 @@ package function
 
 import (
 	"fmt"
+	"io/ioutil"
 	"math/rand"
+	"net/http"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -12,7 +14,73 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func Run(c *model.Config, ch chan model.Stp) {
+func Run(c *model.Config, beforeIP *string, ch chan model.Stp) {
+
+	logrus.Println("checking configuration of wireless ... ")
+	logrus.Println("active: ", c.WiCon.Active)
+
+	if c.WiCon.Active && runtime.GOOS == "linux" {
+		timeoutCount := 0
+		for {
+			if timeoutCount == 0 {
+				// disconnect
+				cmdDisconnect := exec.Command("/usr/bin/nmcli", "con", "down", "id", c.WiCon.ConnectionName)
+				resultDisconnect, err := cmdDisconnect.Output()
+				if err != nil {
+					logrus.Panic(err)
+				}
+
+				if strings.Contains(string(resultDisconnect), "successfully deactivated") {
+					logrus.Println("success to disconnect ... ")
+					logrus.Infoln(string(resultDisconnect))
+					logrus.Println("sleep 5 minute for wait connection ... ")
+				}
+
+				time.Sleep(5 * time.Minute)
+			}
+
+			cmdConnect := exec.Command("/usr/bin/nmcli", "d", "wifi", "connect", c.WiCon.ConnectionName, "password", c.WiCon.Password)
+			result, err := cmdConnect.Output()
+			if err != nil {
+				logrus.Panic(err)
+			}
+
+			if strings.Contains(string(result), "successfully activated") {
+				logrus.Println("success to connect ... ")
+				logrus.Info(string(result))
+
+				url := "https://api.ipify.org?format=text" // we are using a pulib IP API, we're using ipify here, below are some others
+				// https://www.ipify.org
+				// http://myexternalip.com
+				// http://api.ident.me
+				// http://whatismyipaddress.com/api
+				logrus.Println("Getting IP address from ipify ... ")
+				resp, err := http.Get(url)
+				if err != nil {
+					if strings.Contains(err.Error(), "timeout") {
+						if timeoutCount > 5 {
+							timeoutCount = 0
+						} else {
+							timeoutCount++
+						}
+					} else {
+						logrus.Panic(err)
+					}
+				}
+				defer resp.Body.Close()
+				ip, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					logrus.Panic(err)
+				}
+				logrus.Info("My IP is: ", string(ip))
+				// check if ip before is null break the forloop
+				if beforeIP == nil || *beforeIP != string(ip) {
+					*beforeIP = string(ip)
+					break
+				}
+			}
+		}
+	}
 
 	destinationProfile := c.DestinationProfile
 
@@ -122,8 +190,6 @@ func Run(c *model.Config, ch chan model.Stp) {
 
 		if len(listOfUsername) == c.CloneBrowser && firstWindow {
 			switch runtime.GOOS {
-			case "windows":
-				windowsSwitchWindow(profiles)
 			case "linux":
 				linuxSwitchWindow(c.OpenBrowserCommand.ApplicationName)
 			default:
@@ -151,7 +217,20 @@ func Run(c *model.Config, ch chan model.Stp) {
 					logrus.Error(err)
 				}
 
-				go Run(c, ch)
+				if runtime.GOOS == "linux" && c.WiCon.Active {
+					cmdDisconnect := exec.Command("/usr/bin/nmcli", "con", "down", "id", c.WiCon.ConnectionName)
+					result, err := cmdDisconnect.Output()
+					if err != nil {
+						logrus.Panic(err)
+					}
+
+					if strings.Contains(string(result), "successfully deactivated") {
+						logrus.Println("success to disconnect ... ")
+						logrus.Infoln(string(result))
+					}
+				}
+
+				go Run(c, beforeIP, ch)
 
 				break
 			}
