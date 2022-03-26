@@ -1,12 +1,19 @@
 package model
 
 /**
+ */
+type ChannelCodeResponse struct {
+	ChannelCode string `json:"channelCode"`
+}
+
+/**
 * ProfileDetail
  */
 type ProfileDetail struct {
 	ProfileName string `json:"profileName"`
 	Username    string `json:"username"`
 	Password    string `json:"password"`
+	ChannelCode string `json:"channelCode"`
 }
 
 /**
@@ -54,6 +61,7 @@ type Step struct {
 * JavascriptConfig
  */
 type JavascriptConfig struct {
+	Mode         int    `json:"mode"`
 	Keyword      string `json:"keyword"`
 	ChannelName  string `json:"channelName"`
 	ChannelCode  string `json:"channelCode"`

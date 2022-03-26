@@ -38,6 +38,19 @@ func main() {
 		return ec.JSON(http.StatusOK, c.JavascriptConfig)
 	})
 
+	e.GET("/user/:name", func(ec echo.Context) error {
+		name := ec.Param("name")
+		channelCodeResponse := model.ChannelCodeResponse{}
+		for i := 0; i < len(c.Profile.Detail); i++ {
+			if c.Profile.Detail[i].Username == name {
+				channelCodeResponse.ChannelCode = c.Profile.Detail[i].ChannelCode
+				break
+			}
+		}
+
+		return ec.JSON(http.StatusOK, channelCodeResponse)
+	})
+
 	e.GET("/installation", func(c echo.Context) error {
 		jsonFile, err := os.Open("credentials.json")
 		if err != nil {
@@ -74,9 +87,6 @@ func main() {
 			return c.JSON(http.StatusInternalServerError, err)
 		}
 
-		logrus.Println("username: ", stp.Username)
-		logrus.Println("command: ", stp.Command)
-
 		ch <- stp
 
 		return c.JSON(http.StatusCreated, stp)
@@ -93,6 +103,7 @@ func main() {
 	logrus.Println("1. For Full installation")
 	logrus.Println("2. For Run Software")
 	logrus.Println("3. For Some Installation")
+	logrus.Println("4. For run with local playlist")
 	logrus.Println("0. For exit Program")
 	for {
 		fmt.Print("-> ")
@@ -114,6 +125,32 @@ func main() {
 		} else if strings.Compare("3", text) == 0 {
 			logrus.Println("installation started ...")
 			function.InstallSomeProfile(&c)
+		} else if strings.Compare("4", text) == 0 {
+			c.JavascriptConfig.Mode = 1
+
+			logrus.Println("checking directory...")
+			directoryReady := true
+
+			for i := 0; i < len(c.Profile.Detail); i++ {
+				path, err := os.Getwd()
+				if err != nil {
+					logrus.Error(err)
+					directoryReady = false
+					break
+				}
+
+				if _, err := os.Stat(path + "/" + c.Profile.Prefix + c.Profile.Split + c.Profile.Detail[i].ProfileName); os.IsNotExist(err) {
+					logrus.Error("you dont have default configuration directory, try to install it...")
+					directoryReady = false
+					break
+				}
+			}
+
+			if directoryReady {
+				logrus.Println("getting started application function...")
+				function.Run(&c, nil, ch)
+			}
+
 		} else if strings.Compare("2", text) == 0 {
 			logrus.Println("checking directory...")
 			directoryReady := true
